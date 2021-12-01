@@ -3,9 +3,9 @@ defmodule ReportsGenerator do
 
   # const
   @available_foods [
-    "açai",
+    "acai",
     "churrasco",
-    "hambúrguer",
+    "hamburguer",
     "pastel",
     "esfirra",
     "pizza",
@@ -16,12 +16,17 @@ defmodule ReportsGenerator do
   def build(filename) do
     "reports/#{filename}"
     |> Parser.parse_file()
-    |> Enum.reduce(report_acc(), fn line, report -> sum_values(line, report) end)
+    |> Enum.reduce(report_acc(), fn line, report ->
+      sum_values(line, report)
+    end)
   end
 
   # Captura o maior valor do map
-  def fetch_higher_cost(report, option),
-    do: Enum.max_by(report[option], fn {_key, value} -> value end)
+  def fetch_higher_cost(report, option) do
+    {key, cost} = Enum.max_by(report[option], fn {_key, value} -> value end)
+
+    %{id: key, value: cost}
+  end
 
   defp sum_values([id, food_name, price], %{"foods" => foods, "users" => users} = report) do
     users = Map.put(users, id, users[id] + price)
