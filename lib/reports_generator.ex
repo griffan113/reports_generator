@@ -1,18 +1,10 @@
 defmodule ReportsGenerator do
   def build(filename) do
     "reports/#{filename}"
-    |> File.stream!()
-    |> Enum.reduce(report_acc(), fn line, report ->
-      [id, _foodName, price] = parse_line(line)
+    |> ReportsGenerator.Parser.parse_file()
+    |> Enum.reduce(report_acc(), fn [id, _foodName, price], report ->
       Map.put(report, id, report[id] + price)
     end)
-  end
-
-  defp parse_line(line) do
-    line
-    |> String.trim()
-    |> String.split(",")
-    |> List.update_at(2, &String.to_integer/1)
   end
 
   # Pega uma coleção e converte em outra
