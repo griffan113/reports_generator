@@ -7,6 +7,7 @@ defmodule ReportsGenerator do
     "churrasco",
     "hambúrguer",
     "pastel",
+    "esfirra",
     "pizza",
     "prato_feito",
     "sushi"
@@ -19,10 +20,8 @@ defmodule ReportsGenerator do
   end
 
   # Captura o maior valor do map
-  def fetch_higher_cost(report) do
-    {key, cost} = Enum.max_by(report, fn {_key, value} -> value end)
-    %{id: key, value: cost}
-  end
+  def fetch_higher_cost(report, option),
+    do: Enum.max_by(report[option], fn {_key, value} -> value end)
 
   defp sum_values([id, food_name, price], %{"foods" => foods, "users" => users} = report) do
     users = Map.put(users, id, users[id] + price)
