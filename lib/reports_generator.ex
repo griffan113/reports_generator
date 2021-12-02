@@ -13,8 +13,13 @@ defmodule ReportsGenerator do
     "sushi"
   ]
 
+  @options [
+    "foods",
+    "users"
+  ]
+
   def build(filename) do
-    "reports/#{filename}"
+    filename
     |> Parser.parse_file()
     |> Enum.reduce(report_acc(), fn line, report ->
       sum_values(line, report)
@@ -22,11 +27,15 @@ defmodule ReportsGenerator do
   end
 
   # Captura o maior valor do map
-  def fetch_higher_cost(report, option) do
+  # Guards
+  def fetch_higher_cost(report, option) when option in @options do
     {key, cost} = Enum.max_by(report[option], fn {_key, value} -> value end)
 
-    %{id: key, value: cost}
+    {:ok, %{id: key, value: cost}}
   end
+
+  def fetch_higher_cost(_report, option),
+    do: {:error, "Unhandled option error: #{option} does not exist in type @foods"}
 
   defp sum_values([id, food_name, price], %{"foods" => foods, "users" => users} = report) do
     users = Map.put(users, id, users[id] + price)
